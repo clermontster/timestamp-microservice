@@ -1,11 +1,13 @@
 const express = require('express');
+const moment = require('moment');
 const app = express();
 const bodyparser = require('body-parser');
 const { get } = require('lodash'); 
 
 function getUnixTime(date) {
   const unixTime = new Date(date);
-  return unixTime.getTime();
+  console.log('unixTime',Date.parse(unixTime));
+  return Date.parse(unixTime)/1000;
 }
 
 function getNaturalTime(timestamp) {
@@ -13,10 +15,10 @@ function getNaturalTime(timestamp) {
     'month': 'long',
     'day': '2-digit',
     'year': 'numeric',
+    'timeZone': 'UTC',
   };
   console.log('timestamp',timestamp);
-
-  return new Date(JSON.parse(timestamp)).toLocaleDateString('US-EN',options);
+  return new Date(timestamp * 1000).toLocaleDateString('US-EN',options);
 }
 
 app.get('/:date', (req, res) => {
@@ -27,7 +29,7 @@ app.get('/:date', (req, res) => {
   if ( param && !isString) {
     // console.log('return timestamp');
     res.json({
-      unix: JSON.parse(param),
+      unix: parseInt(param,10),
       natural: getNaturalTime(param),
     });
     return;
